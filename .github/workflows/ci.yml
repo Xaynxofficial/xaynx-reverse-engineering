@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-macos:
+    name: macOS (Apple Silicon / Intel)
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [ Release ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install capstone googletest qtbase
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DXRL_BUILD_GUI=ON \
+            -DXRL_BUILD_TESTS=ON \
+            -DXRL_BUILD_CLI=ON \
+            -DXRL_WITH_CAPSTONE=ON \
+            -DCMAKE_PREFIX_PATH="/opt/homebrew;/opt/homebrew/opt/qtbase"
+
+      - name: Build
+        run: |
+          cmake --build build --config ${{ matrix.build_type }} -j $(sysctl -n hw.ncpu)
+
+      - name: Run automated tests
+        run: |
+          ctest --test-dir build --output-on-failure -C ${{ matrix.build_type }}
+
+      - name: Test CLI smoke
+        run: |
+          ./build/xrl-cli /bin/ls --disasm --count 10
+          ./build/xrl-cli /bin/ls --json sample.json
+          python3 -c "import json; d=json.load(open('sample.json')); print('Valid JSON report format:', d['binary']['format'])"
+          ./build/xrl-cli --diff /bin/ls /bin/ls --text
+          ./build/xrl-cli --diff /bin/ls /bin/zsh --json diff.json
+          python3 -c "import json; d=json.load(open('diff.json')); print('Diff result:', d['summary'])"
+
+  build-windows:
+    name: Windows (MSVC 64-bit)
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [ Release ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup vcpkg cache
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('VCPKG_BINARY_SOURCES', 'clear;x-gha,readwrite')
+
+      - name: Install dependencies via vcpkg
+        run: |
+          vcpkg install capstone:x64-windows gtest:x64-windows
+
+      - name: Install Qt 6
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.2'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'
+          modules: 'qtbase'
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build `
+            -G "Visual Studio 17 2022" -A x64 `
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+            -DXRL_BUILD_GUI=ON `
+            -DXRL_BUILD_TESTS=ON `
+            -DXRL_BUILD_CLI=ON `
+            -DXRL_WITH_CAPSTONE=ON `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+
+      - name: Build
+        run: |
+          cmake --build build --config ${{ matrix.build_type }} --parallel
+
+      - name: Run automated tests
+        run: |
+          ctest --test-dir build --output-on-failure -C ${{ matrix.build_type }}
+
+      - name: Test CLI smoke
+        run: |
+          $cli = "build\Release\xrl-cli.exe"
+          if (Test-Path $cli) {
+            & $cli $cli --disasm --count 10
+            & $cli $cli --json sample.json
+            & $cli --diff $cli $cli --json diff.json
+          }
+
