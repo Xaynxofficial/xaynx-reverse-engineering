@@ -12,7 +12,7 @@ The application includes a 64-bit Hex Viewer, Capstone-backed disassembly, CFG a
 ![Xaynx Reverse Lab showing parsed file metadata and an analysis summary in the desktop app](docs/images/overview.png)
 
 > [!IMPORTANT]
-> **Preview release.** The current source was built and all 164 automated tests passed locally on macOS (Apple Silicon). **Testing has not been completed on Windows or Linux.** The latest Windows CI attempt stopped while installing Qt, before configuration, compilation, or tests; Linux has no CI job yet. See [CI runs](https://github.com/Xaynxofficial/xaynx-reverse-engineering/actions). Analysis is static: target binaries are treated as untrusted data and are never executed or dynamically loaded.
+> **Preview:** Built and 164 tests passed on macOS. Windows and Linux are not yet tested. [CI status](https://github.com/Xaynxofficial/xaynx-reverse-engineering/actions). Files are analyzed statically and never executed.
 
 ## Documentation
 
@@ -207,6 +207,36 @@ Parser metadata and the loaded byte snapshot are reused. String and entropy resu
    ```powershell
    .\build\src\ui\Release\xaynx-reverse-lab.exe
    ```
+
+---
+
+### Linux (Debian / Ubuntu)
+
+Linux has not been tested yet. Install the build dependencies:
+
+```bash
+sudo apt update
+sudo apt install build-essential cmake qt6-base-dev libcapstone-dev libgtest-dev
+```
+
+Configure, build, and run tests:
+
+```bash
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DXRL_BUILD_GUI=ON \
+  -DXRL_BUILD_TESTS=ON \
+  -DXRL_BUILD_CLI=ON
+
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+```
+
+Launch the desktop app:
+
+```bash
+./build/src/ui/'Xaynx Reverse Lab'
+```
 
 ---
 
