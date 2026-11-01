@@ -12,7 +12,7 @@ The application includes a 64-bit Hex Viewer, Capstone-backed disassembly, CFG a
 ![Xaynx Reverse Lab showing parsed file metadata and an analysis summary in the desktop app](docs/images/overview.png)
 
 > [!IMPORTANT]
-> **Preview:** Built and 164 tests passed on macOS. Windows and Linux are not yet tested. [CI status](https://github.com/Xaynxofficial/xaynx-reverse-engineering/actions). Files are analyzed statically and never executed.
+> **Build:** macOS build verified locally; 164 tests passed. Windows and Linux build instructions are below. [CI status](https://github.com/Xaynxofficial/xaynx-reverse-engineering/actions). Files are analyzed statically and never executed.
 
 ## Documentation
 
@@ -212,7 +212,7 @@ Parser metadata and the loaded byte snapshot are reused. String and entropy resu
 
 ### Linux (Debian / Ubuntu)
 
-Linux has not been tested yet. Install the build dependencies:
+Install the build dependencies:
 
 ```bash
 sudo apt update
