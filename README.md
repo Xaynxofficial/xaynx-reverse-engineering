@@ -1,26 +1,45 @@
 # Xaynx Reverse Lab
 
-[![CI](https://github.com/xaynx/xaynx-reverse-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/xaynx/xaynx-reverse-lab/actions/workflows/ci.yml)
+[![CI](https://github.com/Xaynxofficial/xaynx-reverse-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaynxofficial/xaynx-reverse-lab/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Standard: C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B20)
 [![Qt: 6.x](https://img.shields.io/badge/Qt-6.x-green.svg)](https://www.qt.io/)
 
-**Xaynx Reverse Lab** is a professional, cross-platform static binary analysis and reverse engineering desktop workbench written from scratch in modern C++20 and Qt 6.
+Xaynx Reverse Lab is a C++20 and Qt 6 desktop workbench for inspecting PE, ELF, and Mach-O files without executing them. It brings binary metadata, disassembly, control-flow analysis, cross-references, strings, entropy, and binary comparison into one local workflow.
 
-It provides deep inspection of executable formats, bounds-checked section parsing, SHA-256 cryptographic hashing, linear disassembly powered by Capstone, a responsive 64-bit scrollable hex viewer, an interactive block-level entropy heatmap, streamed ASCII/UTF-8/UTF-16 string extraction and classification, automated heuristic observation flagging, structured JSON/plain-text reporting, and an optional decoupled integration with NSA Ghidra for advanced decompilation.
+The application includes a 64-bit Hex Viewer, Capstone-backed disassembly, CFG and XREF explorers, an entropy heatmap, streamed string extraction, binary comparison, explainable static-analysis observations, and an optional Ghidra integration.
 
-Target binaries are **analyzed as untrusted input and are never executed or dynamically loaded**.
+> [!IMPORTANT]
+> **Preview release.** The current source was built and all 164 automated tests passed locally on macOS (Apple Silicon). The latest Windows CI attempt stopped while installing Qt, before configuration, compilation, or tests; Linux has not yet been verified. See [CI runs](https://github.com/Xaynxofficial/xaynx-reverse-lab/actions). Analysis is static: target binaries are treated as untrusted data and are never executed or dynamically loaded.
+
+## Documentation
+
+GitHub renders this `README.md` on the repository home page. The other Markdown guides are available in [`docs/`](docs/); open a link below or browse the folder.
+
+| Guide | What it covers |
+| --- | --- |
+| [Documentation index](docs/README.md) | A directory of the project guides. |
+| [Architecture](docs/architecture.md) | Components, data flow, analysis engines, and implementation boundaries. |
+| [Analysis notes](docs/analysis-notes.md) | Heuristic policy, evidence interpretation, entropy, and limitations. |
+| [Ghidra setup](docs/ghidra.md) | Optional headless Ghidra integration and configuration. |
+| [Packaging](docs/packaging.md) | macOS and Windows deployment guidance. |
+
+## Contents
+
+- [Supported systems and binary formats](#supported-systems-and-binary-formats)
+- [Features](#features)
+- [Build instructions](#build-instructions)
+- [Command-line usage](#command-line-usage)
+- [Tests](#tests)
+- [Entropy formula and limitations](#entropy-formula-and-limitations)
+- [License](#license)
 
 ---
 
-## Supported Operating Systems & Formats
+## Supported Systems and Binary Formats
 
-### Target Operating Systems
-- **macOS**: Native on Apple Silicon (M1/M2/M3/M4) and Intel x86-64 (macOS 12+).
-- **Windows**: Windows 10 and Windows 11, 64-bit (MSVC toolchain).
-- **Linux**: Build supported via GCC 12+ / Clang 15+ and Qt 6.
+The project has build instructions and CI configuration for macOS and Windows. Linux is a build target, but has no CI job yet. Platform support should be considered **verified only after that platform's build and tests complete successfully**; see the preview status above.
 
-### Executable Formats
 | Format | Architectures | Features Parsed |
 | :--- | :--- | :--- |
 | **PE / PE32+** (Windows) | x86, x86-64, ARM, ARM64, Thumb-2, MIPS, RISC-V | DOS/COFF headers, sections, virtual/raw mappings, permissions, entry point, imports/exports, COFF symbols and section relocations, base relocations, and CodeView RSDS PDB identity (path/GUID/age; PDB contents are not loaded). |
@@ -29,7 +48,7 @@ Target binaries are **analyzed as untrusted input and are never executed or dyna
 
 ---
 
-## Core Capabilities
+## Features
 
 - **Safe Binary Parsing**: Every read is validated through an arithmetic bounds checker (`xrl::Reader`) preventing integer overflow, out-of-bounds reads, or memory corruption.
 - **Strict Limit Enforcement**: The executable-format parser's in-memory file cap defaults to 512 MiB; section counts (4096), load commands (16,384), and symbols (200,000) are also bounded. Entropy analysis uses a separate buffered streaming pass and retains one result per block.
@@ -189,7 +208,7 @@ Parser metadata and the loaded byte snapshot are reused. String and entropy resu
 
 ---
 
-## Headless CLI Tool (`xrl-cli`)
+## Command-Line Usage
 
 For automated pipelines, continuous integration, or headless scripting:
 
@@ -215,7 +234,7 @@ For automated pipelines, continuous integration, or headless scripting:
 
 ---
 
-## Automated Test Coverage
+## Tests
 The comprehensive test suite in `tests/` covers:
 - Valid PE32+, ELF32/64, and Mach-O (thin and universal multi-slice) synthetic fixtures.
 - Corrupted and invalid magic bytes (`MZ` without PE, non-ELF, fake universal headers).
@@ -232,7 +251,7 @@ The comprehensive test suite in `tests/` covers:
 - RFC 8259 JSON parser edge cases (deep nesting, surrogate pairs, malformed tokens).
 - Neutral wording verification for heuristic outputs.
 
-## Entropy Formula & Limitations
+## Entropy Formula and Limitations
 
 For a block with byte-value probabilities $p_i$, Shannon entropy is
 $H=-\sum_{i=0}^{255}p_i\log_2(p_i)$, measured in bits per byte (0–8). Each block
