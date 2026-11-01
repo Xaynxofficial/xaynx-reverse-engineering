@@ -9,6 +9,8 @@ Xaynx Reverse Lab is a C++20 and Qt 6 desktop workbench for inspecting PE, ELF, 
 
 The application includes a 64-bit Hex Viewer, Capstone-backed disassembly, CFG and XREF explorers, an entropy heatmap, streamed string extraction, binary comparison, explainable static-analysis observations, and an optional Ghidra integration.
 
+![Xaynx Reverse Lab showing parsed file metadata and an analysis summary in the desktop app](docs/images/overview.png)
+
 > [!IMPORTANT]
 > **Preview release.** The current source was built and all 164 automated tests passed locally on macOS (Apple Silicon). **Testing has not been completed on Windows or Linux.** The latest Windows CI attempt stopped while installing Qt, before configuration, compilation, or tests; Linux has no CI job yet. See [CI runs](https://github.com/Xaynxofficial/xaynx-reverse-lab/actions). Analysis is static: target binaries are treated as untrusted data and are never executed or dynamically loaded.
 
