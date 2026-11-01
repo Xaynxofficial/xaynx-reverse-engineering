@@ -1,9 +1,9 @@
 # Xaynx Reverse Lab
 
-[![CI](https://github.com/Xaynxofficial/xaynx-reverse-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaynxofficial/xaynx-reverse-lab/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Standard: C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B20)
-[![Qt: 6.x](https://img.shields.io/badge/Qt-6.x-green.svg)](https://www.qt.io/)
+[![Build](https://img.shields.io/github/actions/workflow/status/Xaynxofficial/xaynx-reverse-engineering/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Build)](https://github.com/Xaynxofficial/xaynx-reverse-engineering/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/Xaynxofficial/xaynx-reverse-engineering?style=for-the-badge&label=License)](LICENSE)
+[![C++20](https://img.shields.io/badge/C%2B%2B-20-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://en.wikipedia.org/wiki/C%2B%2B20)
+[![Qt 6](https://img.shields.io/badge/Qt-6-41CD52?style=for-the-badge&logo=qt&logoColor=white)](https://www.qt.io/)
 
 Xaynx Reverse Lab is a C++20 and Qt 6 desktop workbench for inspecting PE, ELF, and Mach-O files without executing them. It brings binary metadata, disassembly, control-flow analysis, cross-references, strings, entropy, and binary comparison into one local workflow.
 
@@ -12,7 +12,7 @@ The application includes a 64-bit Hex Viewer, Capstone-backed disassembly, CFG a
 ![Xaynx Reverse Lab showing parsed file metadata and an analysis summary in the desktop app](docs/images/overview.png)
 
 > [!IMPORTANT]
-> **Preview release.** The current source was built and all 164 automated tests passed locally on macOS (Apple Silicon). **Testing has not been completed on Windows or Linux.** The latest Windows CI attempt stopped while installing Qt, before configuration, compilation, or tests; Linux has no CI job yet. See [CI runs](https://github.com/Xaynxofficial/xaynx-reverse-lab/actions). Analysis is static: target binaries are treated as untrusted data and are never executed or dynamically loaded.
+> **Preview release.** The current source was built and all 164 automated tests passed locally on macOS (Apple Silicon). **Testing has not been completed on Windows or Linux.** The latest Windows CI attempt stopped while installing Qt, before configuration, compilation, or tests; Linux has no CI job yet. See [CI runs](https://github.com/Xaynxofficial/xaynx-reverse-engineering/actions). Analysis is static: target binaries are treated as untrusted data and are never executed or dynamically loaded.
 
 ## Documentation
 
